@@ -2,6 +2,11 @@ type Query {
   jobs: [Job]
 }
 
+type Company {
+  id: ID!
+  name: String
+  description: String
+}
 # ID is built in type in graphQL which is sent as a string but adds additional info to the
 # client that this field is unique and not intended to be user friendly
 # the ! mark means that it cannot be null (Mandatory field)
@@ -9,5 +14,6 @@ type Query {
 type Job {
   id: ID!
   title: String
+  company: Company
   description: String
 }
