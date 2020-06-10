@@ -1,14 +1,14 @@
-const fs = require('fs');
-const { ApolloServer, gql } = require('apollo-server-express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const express = require('express');
-const expressJwt = require('express-jwt');
-const jwt = require('jsonwebtoken');
-const db = require('./db');
+const fs = require("fs");
+const { ApolloServer, gql } = require("apollo-server-express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const express = require("express");
+const expressJwt = require("express-jwt");
+const jwt = require("jsonwebtoken");
+const db = require("./db");
 
 const port = 9000;
-const jwtSecret = Buffer.from('Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt', 'base64');
+const jwtSecret = Buffer.from("Zn8Q5tyZ/G1MHltc4F/gTkVJMlrbKiZt", "base64");
 
 const app = express();
 app.use(
@@ -16,16 +16,17 @@ app.use(
   bodyParser.json(),
   expressJwt({
     secret: jwtSecret,
-    credentialsRequired: false,
+    credentialsRequired: false
   })
 );
 // encoding is set to utf8 to make sure that it reads the file as a string and not a binary file
-const typeDefs = gql(fs.readFileSync('./schema.graphql', { encoding: 'utf8' }));
-const resolvers = require('./resolvers');
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
-apolloServer.applyMiddleware({ app, path: '/graphql' });
+const typeDefs = gql(fs.readFileSync("./schema.graphql", { encoding: "utf8" }));
+const resolvers = require("./resolvers");
+const context = ({ req }) => ({ user: req.user });
+const apolloServer = new ApolloServer({ typeDefs, resolvers, context });
+apolloServer.applyMiddleware({ app, path: "/graphql" });
 
-app.post('/login', (req, res) => {
+app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = db.users.list().find((user) => user.email === email);
   if (!(user && user.password === password)) {
