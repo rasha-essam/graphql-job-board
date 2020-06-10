@@ -22,7 +22,7 @@ app.use(
 // encoding is set to utf8 to make sure that it reads the file as a string and not a binary file
 const typeDefs = gql(fs.readFileSync("./schema.graphql", { encoding: "utf8" }));
 const resolvers = require("./resolvers");
-const context = ({ req }) => ({ user: req.user });
+const context = ({ req }) => ({ user: req.user && db.users.get(req.user.sub) });
 const apolloServer = new ApolloServer({ typeDefs, resolvers, context });
 apolloServer.applyMiddleware({ app, path: "/graphql" });
 
